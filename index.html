@@ -2,27 +2,312 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tetris Mobile</title>
-  <link rel="stylesheet" href="style.css">
+  <!-- Configuração da Viewport Otimizada para Mobile -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Meu Dia - Lista de Tarefas</title>
+  <style>
+    /* VARIÁVEIS DE CORES E ESTILO */
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f3f4f6;
+      --card-bg: #ffffff;
+      --text: #1f2937;
+      --text-muted: #6b7280;
+      --border: #e5e7eb;
+      --danger: #ef4444;
+      --completed: #9ca3af;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 12px;
+    }
+
+    /* CONTAINER PRINCIPAL (Mobile First com Flexbox) */
+    .app-container {
+      width: 100%;
+      max-width: 600px;
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    /* CABEÇALHO (Inspirado no "Meu Dia" do MS To-Do) */
+    .header {
+      padding: 24px 20px 16px;
+    }
+
+    .header h1 {
+      font-size: 1.8rem;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .header p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 4px;
+      text-transform: capitalize;
+    }
+
+    /* FORMULÁRIO E INPUTS */
+    .input-form {
+      padding: 0 20px 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .input-form input {
+      flex: 1;
+      min-height: 50px; /* Grande para facilidade de toque */
+      padding: 0 16px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-form input:focus {
+      border-color: var(--primary);
+    }
+
+    .input-form button {
+      min-height: 50px;
+      min-width: 50px;
+      padding: 0 20px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .input-form button:active {
+      transform: scale(0.96);
+    }
+
+    /* LISTA DE TAREFAS */
+    .task-list {
+      list-style: none;
+      padding: 0 20px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .task-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex: 1;
+      cursor: pointer;
+      padding: 8px 0; /* Aumenta a área clicável no celular */
+    }
+
+    /* BOTÃO CHECKBOX GRANDE */
+    .checkbox-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid var(--primary);
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .task-item.completed .checkbox-btn {
+      background-color: var(--primary);
+    }
+
+    .task-item.completed .checkbox-btn::after {
+      content: '✓';
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .task-text {
+      font-size: 1rem;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .task-item.completed .task-text {
+      text-decoration: line-through;
+      color: var(--completed);
+    }
+
+    /* BOTÃO EXCLUIR GRANDE */
+    .delete-btn {
+      min-width: 44px;
+      min-height: 44px;
+      background: transparent;
+      border: none;
+      color: var(--danger);
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      margin-left: 8px;
+      flex-shrink: 0;
+    }
+
+    .delete-btn:active {
+      background-color: #fee2e2;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 32px 0;
+      font-size: 0.95rem;
+    }
+
+    /* AJUSTES PARA DESKTOP */
+    @media (min-width: 640px) {
+      body {
+        padding-top: 40px;
+      }
+      .input-form button:hover {
+        background-color: var(--primary-hover);
+      }
+      .delete-btn:hover {
+        background-color: #fee2e2;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>TETRIS</h1>
-      <div class="score-board">Pontos: <span id="score">0</span></div>
-    </div>
 
-    <canvas id="tetris" width="240" height="400"></canvas>
+  <main class="app-container">
+    <header class="header">
+      <h1>Meu Dia</h1>
+      <p id="current-date"></p>
+    </header>
 
-    <div class="controls">
-      <button id="btn-left">◀</button>
-      <button id="btn-rotate">↻</button>
-      <button id="btn-right">▶</button>
-      <button id="btn-down" class="btn-wide">▼ Casser</button>
-    </div>
-  </div>
+    <form class="input-form" id="todo-form">
+      <input type="text" id="task-input" placeholder="Adicionar uma tarefa" autocomplete="off" required>
+      <button type="submit" aria-label="Adicionar tarefa">+</button>
+    </form>
 
-  <script src="script.js"></script>
+    <ul class="task-list" id="task-list"></ul>
+  </main>
+
+  <script>
+    const todoForm = document.getElementById('todo-form');
+    const taskInput = document.getElementById('task-input');
+    const taskList = document.getElementById('task-list');
+    const currentDateEl = document.getElementById('current-date');
+
+    // Exibe a data atual no estilo MS To-Do
+    const options = { weekday: 'long', day: 'numeric', month: 'long' };
+    const today = new Date();
+    currentDateEl.textContent = today.toLocaleDateString('pt-BR', options);
+
+    // Carrega do LocalStorage
+    let tasks = JSON.parse(localStorage.getItem('todo_app_tasks')) || [];
+
+    function saveTasks() {
+      localStorage.setItem('todo_app_tasks', JSON.stringify(tasks));
+    }
+
+    function renderTasks() {
+      taskList.innerHTML = '';
+
+      if (tasks.length === 0) {
+        taskList.innerHTML = '<li class="empty-state">Sua lista está vazia!</li>';
+        return;
+      }
+
+      tasks.forEach((task, index) => {
+        const li = document.createElement('li');
+        li.className = `task-item ${task.completed ? 'completed' : ''}`;
+
+        li.innerHTML = `
+          <div class="task-left" onclick="toggleTask(${index})">
+            <div class="checkbox-btn" aria-label="Concluir tarefa"></div>
+            <span class="task-text">${escapeHtml(task.text)}</span>
+          </div>
+          <button class="delete-btn" onclick="deleteTask(${index})" aria-label="Excluir tarefa">✕</button>
+        `;
+
+        taskList.appendChild(li);
+      });
+    }
+
+    function addTask(e) {
+      e.preventDefault();
+      const text = taskInput.value.trim();
+      if (!text) return;
+
+      tasks.push({ text, completed: false });
+      taskInput.value = '';
+      saveTasks();
+      renderTasks();
+    }
+
+    function toggleTask(index) {
+      tasks[index].completed = !tasks[index].completed;
+      saveTasks();
+      renderTasks();
+    }
+
+    function deleteTask(index) {
+      tasks.splice(index, 1);
+      saveTasks();
+      renderTasks();
+    }
+
+    // Proteção básica contra inserção de códigos JS/HTML (XSS)
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    todoForm.addEventListener('submit', addTask);
+    renderTasks();
+  </script>
 </body>
 </html>
