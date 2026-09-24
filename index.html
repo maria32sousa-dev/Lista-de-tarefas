@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tetris Mobile</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>TETRIS</h1>
+      <div class="score-board">Pontos: <span id="score">0</span></div>
+    </div>
+
+    <canvas id="tetris" width="240" height="400"></canvas>
+
+    <div class="controls">
+      <button id="btn-left">◀</button>
+      <button id="btn-rotate">↻</button>
+      <button id="btn-right">▶</button>
+      <button id="btn-down" class="btn-wide">▼ Casser</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
